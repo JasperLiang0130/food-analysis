@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<link rel="stylesheet" type="text/css" href="">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+	<title>My chart.js example</title>
+
+</head>
+<body>
+	<div class="bg-warning py-5">
+
+		<form class="form-inline col-md-6 offset-md-3">
+			<div class="form-group">
+			  <label for="files">Upload a CSV file:</label>
+			  <input type="file" id="uploadfile" onChange="readCSV(this)" class="form-control" accept=".csv" required />
+			</div>
+		</form>
+
+		<div class="col-md-6 offset-md-3">
+			<div class="card">
+				<div class="card-body">
+					<!-- <h1>Dynamic Chart Js <button class="btn btn-success" onclick="updateChart()">Update</button><button class="btn btn-info" onclick="addValue()">+1</button></h1> -->
+					<h3 id="title">Dynamic Chart Js</h3>
+					<h2><select id='mySelect' class="btn btn-info" onChange="reloadData()"></select><select id='myRange' class="btn btn-success" onChange="reloadData()"><option value="7" selected>Last 7 days</option><option value="30">Last 30 days</option><option value="6">Last 6 months</option><option value="12">Last 12 months</option></select></h2>
+				</div>
+				<div class="card-body">
+					<canvas id="myChart"></canvas>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		function reloadData()
+		{
+			var date_index = $("#mySelect").val();
+			var range = parseInt($("#myRange").val());
+			var result; //array[labels, info]
+			console.log(range);
+			switch(range){
+				case 7:
+					result = convertToDate(date_index, range);
+					break;
+				case 30:
+					result = convertToDate(date_index, range);
+					break;
+				case 12:
+					result = convertToMonth(date_index, range);
+					break;
+				case 6:
+					result = convertToMonth(date_index, range);
+					break;
+				default:
+			}
+			//console.log(result);
+			updateChart(result[0], result[1]);
+		}
+
+		function convertToMonth(date_index, period)
+		{
+			var count_days;
+			var month;
+			labels = [];
+			info = [];
+			for(var i=period; i>0; i--)
+			{	
+				month = obj_csv.dataFile[date_index][0].split('/')[0]; //1~12
+				count_days = 0;
+				var sum_temp = 0;
+				labels.unshift(month);
+				while((month == obj_csv.dataFile[date_index][0].split('/')[0]) && date_index>0 )
+				{
+					sum_temp += parseFloat(obj_csv.dataFile[date_index][1]); 
+					count_days++;
+					date_index--;
+				}
+				//console.log(sum_temp);
+				//console.log(count_days);
+				info.unshift(Math.round(sum_temp/count_days * 100) / 100);
+			}
+			//console.log(labels);
+			//console.log(info);
+			return [labels, info];
+		}
+
+		function convertToDate(date_index, period)
+		{
+			if(date_index != 0)
+			{
+				labels = [];
+				info = [];
+				for(var i=(date_index-period+1); i<=date_index; i++)
+				{
+					if(i>0){
+						labels.push(obj_csv.dataFile[i][0]);
+						info.push(obj_csv.dataFile[i][1]);
+					}
+				}
+				return [labels,info];
+			}	
+		}
+		/*
+		function changeDate(e)
+		{	
+			var date_index = $(e).val();
+			//console.log(date_index);
+			if(date_index != 0)
+			{
+				var range = $("#myRange").val();
+				//console.log(range);
+				labels = [];
+				info = [];
+				for(var i=(date_index-range+1); i<=date_index; i++)
+				{
+					if(i>0){
+						labels.push(obj_csv.dataFile[i][0]);
+						info.push(obj_csv.dataFile[i][1]);
+					}
+				}
+				console.log(labels);
+				console.log(info);
+				updateChart(labels, info);
+			}
+			
+		}
+		function changeRange()
+		{
+			changeDate("#mySelect");
+		}
+		*/
+		function genOption()
+		{
+			$.each(obj_csv.dataFile, function(index, value) {
+				//console.log(index);
+				$("#mySelect").append("<option value='"+ index +"'>" + value[0] + "</option>");
+			});
+		}
+ 		
+		function readCSV(input) {
+		     //console.log(input)
+			 if (input.files && input.files[0]) {
+				let reader = new FileReader();
+				reader.readAsBinaryString(input.files[0]);
+				reader.onload = function (e) {
+					//console.log(e);
+					obj_csv.size = e.total;
+					obj_csv.dataFile = parseData(e.target.result);
+					obj_csv.column = obj_csv.dataFile[0].length;
+		            //console.log(obj_csv.dataFile)
+		            //console.log(obj_csv.column)
+		            genOption();
+		            $("#title").empty().append(input.files[0].name);
+				}
+
+		 	}
+		}
+
+		function parseData(data){
+			let csvData = [];
+		    let row = data.split("\n");
+		    row.forEach(res => {
+		        csvData.push(res.split(","));
+		    });
+		    //console.table(csvData);
+		    //console.log(csvData);
+		    return csvData;
+		}
+
+		var obj_csv = {
+		    size:0,
+		    column:0,
+		    dataFile:[]
+		};
+
+		let myChart = document.getElementById('myChart').getContext('2d');
+		var chart = new Chart(myChart, {
+		    // The type of chart we want to create
+		    type: 'line',
+		    // The data for our dataset
+		    data: {
+		        labels: [],
+		        datasets: [{
+		            label: 'My First dataset',
+		            // backgroundColor: 'rgb(0, 99, 132)',
+		            borderColor: 'rgb(255, 99, 132)',
+		            data: []
+		        }]
+		    },
+		    // Configuration options go here
+		    options: {}
+		});		
+		
+		function updateChart(labels, info)
+		{
+			chart.data.datasets[0].data = info;
+			chart.data.labels = labels;
+			chart.update();
+		}
+
+
+		//Global options
+		Chart.defaults.global.defaultFontFamily = 'Lato';
+		Chart.defaults.global.defaultFontSize = 18;
+		Chart.defaults.global.defaultFontColor ='#777';
+
+		// var chart = new Chart(myChart, {
+		//     // The type of chart we want to create
+		//     type: 'line',
+		//     // The data for our dataset
+		//     data: {
+		//         labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+		//         datasets: [{
+		//             label: 'My First dataset',
+		//             // backgroundColor: 'rgb(0, 99, 132)',
+		//             borderColor: 'rgb(255, 99, 132)',
+		//             data: [0, 10, 5, 2, 20, 30, 45]
+		//         }]
+		//     },
+		//     // Configuration options go here
+		//     options: {}
+		// });
+
+		// function updateChart()
+		// {
+		// 	chart.data.datasets[0].data = [10, 20, 30, 40, 50, 60, 70]; //dataset 1
+		// 	chart.data.datasets[1].data = [0, 10, 5, 2, 20, 30, 45]; //dataset 1
+		// 	chart.update();
+		// };
+
+		//pop = remove last value
+		//shift = remove first value
+		//unshift = add the value at the very begining of the array
+		//push = add the value at the end of the array
+		//reverse = oppsite the array
+		function addValue()
+		{
+			chart.data.datasets[0].data.shift(); //remove first value of array when add new data in
+			chart.data.labels.push("January");
+			chart.update();
+		}
+
+		// let chart = new Chart(myChart, {
+		// 	type:'bar',
+		// 	data:{
+		// 		labels:['Taipei','New Taipei', 'Kanhsiung','Taichung','Tainan','Taoyuan','Hsinchu'],
+		// 		datasets:[{
+		// 			label:'Population 2014',
+		// 			data:[
+		// 				2696316,
+		// 				3974911,
+		// 				1402914,
+		// 				2759887,
+		// 				1885499,
+		// 				2136702,
+		// 				436220
+		// 			],
+		// 			// backgroundColor:'green',
+		// 			backgroundColor:[
+		// 				'rgb(255, 99, 132, 0.6)',
+		// 				'green',
+		// 				'red',
+		// 				'black',
+		// 				'pink',
+		// 				'gray',
+		// 				'purple'
+		// 			],
+		// 			borderWidth:4,
+		// 			borderColor:'#777',
+		// 			hoverBorderWidth:3,
+		// 			hoverBorderColor:'#000'
+		// 		}]
+		// 	},
+		// 	options:{
+		// 		title:{
+		// 			display:true,
+		// 			text:'Largest cities in Taiwan',
+		// 			fontSize:25
+		// 		},
+		// 		legend:{
+		// 			// display:false
+		// 			position:'right',
+		// 			labels:{
+		// 				fontColor:'blue'
+		// 			}
+		// 		},
+		// 		layout:{
+		// 			padding:{
+		// 				left:50,
+		// 				right:0,
+		// 				bottom:0,
+		// 				top:0
+		// 			}
+		// 		},
+		// 		tooltips:{
+		// 			// enabled:false
+		// 		}
+		// 	}
+		// });
+	</script>
+</body>
+</html>
