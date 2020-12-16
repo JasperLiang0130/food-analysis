@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 12, 2020 at 01:05 PM
+-- Generation Time: Dec 15, 2020 at 11:05 PM
 -- Server version: 10.4.8-MariaDB
 -- PHP Version: 7.3.10
 
@@ -60,8 +60,8 @@ CREATE TABLE `customers` (
   `Name` varchar(255) NOT NULL,
   `TotalOrders` int(11) NOT NULL,
   `TotalValue` decimal(11,2) NOT NULL,
-  `FirstOrderDateTime` datetime NOT NULL,
-  `MostRecentOrderDateTime` datetime NOT NULL
+  `FirstOrderDateTime` datetime NULL,
+  `MostRecentOrderDateTime` datetime NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
