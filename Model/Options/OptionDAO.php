@@ -1,10 +1,10 @@
 <?php
     include('OptionDAO_interface.php');
-    include('Option.php');
     class OptionDAO implements OptionDAO_interface{
 
         private $findpkSQL = 'SELECT * FROM options WHERE ID = ?';
         private $getAllSQL = 'SELECT * FROM options';
+        private $getAllFromOptionSetIdSQL = 'SELECT * FROM options WHERE OptionSetID = ?';
 
         public function findOnePK($id){
             global $conn;
@@ -18,7 +18,7 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            $conn->close();
+            //$conn->close();
             return new Option($arr['ID'], $arr['Name'], $arr['Price'], $arr['OptionSetID']);
 
         }
@@ -40,7 +40,7 @@
 			}
 
 			$stmt->close();
-			$conn->close();
+			//$conn->close();
 
 			return $list; //return multi-object e.g. array(object,object......)
         }
@@ -69,9 +69,31 @@
 			}
 
             $stmt->close();
-            $conn->close();
+            //$conn->close();
 
             return $list; 
+        }
+
+        public function getAllFromOptionSetId($optionSetId){
+            global $conn;
+			
+			$list = array();
+			$stmt = $conn->prepare($this->getAllFromOptionSetIdSQL);
+            $stmt->bind_param('i', $optionSetId);
+			if($stmt->execute()){
+				$result = $stmt->get_result();
+
+				while($arr = $result->fetch_assoc()){
+					$list[] = new Option($arr['ID'], $arr['Name'], $arr['Price'], $arr['OptionSetID']); 
+				}
+			}else{
+				echo $stmt->error;
+			}
+
+			$stmt->close();
+			//$conn->close();
+
+			return $list; 
         }
     }
 ?>

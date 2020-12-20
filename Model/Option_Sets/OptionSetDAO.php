@@ -1,11 +1,12 @@
 <?php  
 
     include('OptionSetDAO_interface.php');
-    include('OptionSet.php');
     class OptionSetDAO implements OptionSetDAO_interface{
 
         private $findpkSQL = 'SELECT * FROM option_sets WHERE ID = ?';
         private $getAllSQL = 'SELECT * FROM option_sets';
+        private $getAllFromItemIdSQL = 'SELECT * FROM option_sets WHERE ItemID = ?';
+        private $getAllDistinctItemIdSQL = 'SELECT DISTINCT ItemID FROM option_sets';
 
         public function findOnePK($id){
             global $conn;
@@ -19,7 +20,7 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            $conn->close();
+            //$conn->close();
             return new OptionSet($arr['ID'], $arr['Name'], $arr['MultipleOptions'], $arr['ItemID']);
 
         }
@@ -34,14 +35,15 @@
 				$result = $stmt->get_result();
 
 				while($arr = $result->fetch_assoc()){
-					$list[] = new OptionSet($arr['ID'], $arr['Name'], $arr['MultipleOptions'], $arr['ItemID']); 
+                    $list[] = new OptionSet($arr['ID'], $arr['Name'], $arr['MultipleOptions'], $arr['ItemID']); 
+                    // $list[] = $arr; 
 				}
 			}else{
 				echo $stmt->error;
 			}
 
 			$stmt->close();
-			$conn->close();
+			//$conn->close();
 
 			return $list; //return multi-object e.g. array(object,object......)
         }
@@ -63,6 +65,7 @@
 
 				while($arr = $result->fetch_assoc()){
 					$list[] = new OptionSet($arr['ID'], $arr['Name'], $arr['MultipleOptions'], $arr['ItemID']); 
+					
 				}
 				
 			}else{
@@ -70,9 +73,55 @@
 			}
 
             $stmt->close();
-            $conn->close();
+            //$conn->close();
 
             return $list; 
+        }
+
+        public function getAllFromItemId($itemId){
+            global $conn;
+            
+            $list = array();
+			$stmt = $conn->prepare($this->getAllFromItemIdSQL);
+            $stmt->bind_param('i', $itemId);
+
+			if($stmt->execute()){
+				$result = $stmt->get_result();
+
+				while($arr = $result->fetch_assoc()){
+					$list[] = new OptionSet($arr['ID'], $arr['Name'], $arr['MultipleOptions'], $arr['ItemID']); 
+				}
+			}else{
+				echo $stmt->error;
+			}
+
+			$stmt->close();
+			//$conn->close();
+
+			return $list; 
+
+        }
+
+        public function getAllDistinctItemId(){
+            global $conn;
+			
+			$list = array();
+			$stmt = $conn->prepare($this->getAllDistinctItemIdSQL);
+
+			if($stmt->execute()){
+				$result = $stmt->get_result();
+
+				while($arr = $result->fetch_assoc()){
+                    $list[] = $arr['ItemID']; 
+				}
+			}else{
+				echo $stmt->error;
+			}
+
+			$stmt->close();
+			//$conn->close();
+
+			return $list; 
         }
 
     }

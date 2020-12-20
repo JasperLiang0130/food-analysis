@@ -11,11 +11,11 @@
         private $firstOrderDateTime;
         private $mostRecentOrderDateTime;
 
-        function __construct($id, $name, $phoneNum, $email, $totalOrders, $totalValue, $firstOrderDateTime, $mostRecentOrderDateTime){
+        function __construct($id, $phoneNum, $email, $name, $totalOrders, $totalValue, $firstOrderDateTime, $mostRecentOrderDateTime){
             $this->id = $id;
-            $this->name = $name;
             $this->phoneNum = $phoneNum;
             $this->email = $email;
+            $this->name = $name;
             $this->totalOrders = $totalOrders;
             $this->totalValue = $totalValue;
             $this->firstOrderDateTime = $firstOrderDateTime;

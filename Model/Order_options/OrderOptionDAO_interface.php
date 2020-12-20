@@ -1,9 +1,10 @@
 <?php
-    include('Option.php');
-    interface OptionDAO_interface{
+
+    include("OrderOption.php");
+    interface OrderOptionDAO_interface {
+        public function insert(OrderOption $orderOption);
         public function findOnePK($id);
         public function getAll();
         public function query($keyword,$attribute);
-        public function getAllFromOptionSetId($optionSetId);
     }
 ?>

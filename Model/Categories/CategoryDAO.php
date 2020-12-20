@@ -1,7 +1,5 @@
 <?php
-    include("Category.php");
     include("CategoryDAO_interface.php");
-
     class CategoryDAO implements CategoryDAO_interface{
 
         private $findpkSQL = 'SELECT * FROM categories WHERE ID = ?';
@@ -19,7 +17,7 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            $conn->close();
+            //$conn->close();
             return new Category($arr['ID'], $arr['Name']);
 
         }
@@ -41,7 +39,7 @@
 			}
 
 			$stmt->close();
-			$conn->close();
+			//$conn->close();
 
 			return $list_categories; //return multi-object e.g. array(object,object......)
         }
@@ -70,7 +68,7 @@
 			}
 
             $stmt->close();
-            $conn->close();
+            //$conn->close();
 
             return $list_categories;  
         }
