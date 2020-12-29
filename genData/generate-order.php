@@ -26,7 +26,7 @@
         for ($i=0; $i < $orderNum; $i++) { 
             $items = $itemDao->getAll();
             $sets_distinct_item = $optSetDao->getAllDistinctItemId();
-            $qt_unique_item = mt_rand(1, count($items)); //ordering 1 to number of items each order
+            $qt_unique_item = mt_rand(1, 3); //ordering 1 to 3 distinct items each order
             echo 'Total unique items: '.$qt_unique_item.'<br>';
             $i_choose_items = genRandomNum(0, count($items)-1, $qt_unique_item);
             //$i_item = array_rand($items, $qt_unique_item); //alternative way

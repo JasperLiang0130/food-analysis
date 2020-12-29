@@ -6,6 +6,7 @@
         private $insertSQL = "INSERT INTO order_items (Quantity, SingleValue, TotalValue, ItemID, OrderID) VALUES (?,?,?,?,?)";
         private $findpkSQL = 'SELECT * FROM order_items WHERE ID = ?';
         private $getAllSQL = 'SELECT * FROM order_items';
+        private $querySQL = 'SELECT food.items.Name, food.items.ID, food.order_items.OrderID FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID WHERE (food.order_items.OrderID in (SELECT food.order_items.OrderID FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID WHERE food.items.Name = ? Order by OrderID))';
 
         public function insert(OrderItem $orderItem){
             global $conn;
@@ -66,7 +67,7 @@
 			return $list; //return multi-object e.g. array(object,object......)
         }
 
-        public function query($keyword, $attribute){
+        public function search($keyword, $attribute){
             global $conn;
             $searchSQL ='SELECT * FROM order_items WHERE '.$attribute.' LIKE ?';
             //echo $searchSQL;
@@ -93,6 +94,32 @@
             //$conn->close();
 
             return $list; 
+        }
+
+        public function query($keyword){
+            global $conn;
+            $keyword = htmlspecialchars($keyword); //change characters in html. e.g. < is changed to &lt;
+			$keyword = $conn->real_escape_string($keyword); //make sure no SQL injection
+            
+            $items = array();
+			$stmt = $conn->prepare($this->querySQL);
+            $stmt->bind_param('s', $keyword);
+            
+            if($stmt->execute()){
+				$result = $stmt->get_result();
+
+				while($arr = $result->fetch_assoc()){
+					$items[] = $arr;
+				}
+				
+			}else{
+				echo $stmt->error;
+			}
+
+            $stmt->close();
+            //$conn->close();
+
+            return $items; 
         }
 
     }
