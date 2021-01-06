@@ -7,6 +7,7 @@
         public function getAll();
         public function search($keyword,$attribute);
         public function query($keyword);
+        public function getAllIncName();
 
     }
 ?>

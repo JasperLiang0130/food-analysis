@@ -6,7 +6,8 @@
         private $insertSQL = "INSERT INTO order_items (Quantity, SingleValue, TotalValue, ItemID, OrderID) VALUES (?,?,?,?,?)";
         private $findpkSQL = 'SELECT * FROM order_items WHERE ID = ?';
         private $getAllSQL = 'SELECT * FROM order_items';
-        private $querySQL = 'SELECT food.items.Name, food.items.ID, food.order_items.OrderID FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID WHERE (food.order_items.OrderID in (SELECT food.order_items.OrderID FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID WHERE food.items.Name = ? Order by OrderID))';
+        private $querySQL = 'SELECT food.items.Name, food.items.ID, food.order_items.OrderID, food.orders.DateTime FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID INNER JOIN food.orders ON food.order_items.OrderID = food.orders.ID WHERE (food.order_items.OrderID in (SELECT food.order_items.OrderID FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID WHERE food.items.Name = ? )) Order by DateTime ASC';
+        private $getAllIncNameSQL ='SELECT food.items.Name, food.items.ID, food.order_items.OrderID, food.orders.DateTime FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID INNER JOIN food.orders ON food.order_items.OrderID = food.orders.ID';
 
         public function insert(OrderItem $orderItem){
             global $conn;
@@ -104,6 +105,28 @@
             $items = array();
 			$stmt = $conn->prepare($this->querySQL);
             $stmt->bind_param('s', $keyword);
+            
+            if($stmt->execute()){
+				$result = $stmt->get_result();
+
+				while($arr = $result->fetch_assoc()){
+					$items[] = $arr;
+				}
+				
+			}else{
+				echo $stmt->error;
+			}
+
+            $stmt->close();
+            //$conn->close();
+
+            return $items; 
+        }
+
+        public function getAllIncName(){
+            global $conn;
+            $items = array();
+			$stmt = $conn->prepare($this->getAllIncNameSQL);
             
             if($stmt->execute()){
 				$result = $stmt->get_result();

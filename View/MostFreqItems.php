@@ -21,7 +21,7 @@
     {
         if ($x==$y) return 0;
             return ($x > $y) ? -1 : 1;
-    }
+    } 
 
     function calTotalCount($arr_query, &$arr_res_count, $itemName){
         foreach ($arr_query as $key => $value) {
@@ -68,30 +68,29 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
     <style type="text/css">
-    html,
-    body {
-        height: 100%;
-        background-color: rgb(103, 216, 163, 0.5);
-    }
-
-    .container {
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+        html,
+        body {
+            height: 100%;
+            background-color: rgb(103, 216, 163, 0.5);
+        }
+        .container {
+            height: 90%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body >
-	<!-- This nav is for sign in, sign up and some of links of cafe menu -->   
+    <!-- This nav is for sign in, sign up and some of links of cafe menu -->  
+    <?php include '../Shared/navbar.txt'?> 
     <div class="container">
 	    <div class="text-center" >
-			<form action="#"  method="post" class="">
+			<form action=""  method="post" class="">
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
                         <span class="input-group-text">Item</span>
