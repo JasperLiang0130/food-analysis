@@ -7,7 +7,8 @@
         public function getAll();
         public function search($keyword,$attribute);
         public function query($keyword);
-        public function getAllIncName();
+        public function queryByDate($itemName, $start, $end);
+        public function getAllIncName($start, $end);
 
     }
 ?>

@@ -13,10 +13,10 @@
       <ul class="navbar-nav">
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../View/MostFreqItemsWithDateOverall.php">Overall</a>
+          <a class="nav-link" href="../View/MostFreqItemsWithDateOverallAjx.php">Overall</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="../View/MostFreqItemWithDate.php">MostFreqItemWithDate</a>
+          <a class="nav-link" href="../View/MostFreqItemWithDateAjx.php">MostFreqItemWithDate</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="../View/MostFreqItems.php">MostFreqItem</a>
