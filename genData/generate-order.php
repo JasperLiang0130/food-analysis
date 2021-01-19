@@ -37,9 +37,10 @@
             $distinctItems = count($i_choose_items);
             $json_arr = array(); //will be updated after options inserted
             $orderDateTime = generateOrderDateTime();
+            $firstOrder = (mt_rand(0,1)<=0.1)? 1:0; //less than 10%, first order, >90% not first order 
             $customerId = mt_rand(0, count($customerDao->getAll())-1);
 
-            $orderId = ($orderDao->insert(new Order(null, $totalValue, $totalItems, $distinctItems, '', $orderDateTime, $customerId)))->getId();
+            $orderId = ($orderDao->insert(new Order(null, $totalValue, $totalItems, $distinctItems, '', $orderDateTime, $firstOrder, $customerId)))->getId();
 
             //echo 'orderID: '.$orderId.'<br>';
 
@@ -102,7 +103,7 @@
 
             //update order detail
             $json = convertJSON($json_arr);
-            $orderDao->update(new Order($orderId, $totalValue, $totalItems, $distinctItems, $json, $orderDateTime, $customerId));
+            $orderDao->update(new Order($orderId, $totalValue, $totalItems, $distinctItems, $json, $orderDateTime, $firstOrder, $customerId));
             echo $json.'<br>';    
         }
 

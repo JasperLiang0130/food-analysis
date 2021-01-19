@@ -9,6 +9,7 @@
         private $querySQL = 'SELECT food.items.Name, food.items.ID, food.order_items.OrderID, food.orders.DateTime FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID INNER JOIN food.orders ON food.order_items.OrderID = food.orders.ID WHERE (food.order_items.OrderID in (SELECT food.order_items.OrderID FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID WHERE food.items.Name = ? )) Order by DateTime ASC';
         private $getAllIncNameSQL ='SELECT food.items.Name, food.items.ID, food.order_items.OrderID, food.orders.DateTime FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID INNER JOIN food.orders ON food.order_items.OrderID = food.orders.ID WHERE food.orders.DateTime > ? AND food.orders.DateTime <= ?';
         private $getAllFilterDateSQL ='SELECT food.items.Name, food.items.ID, food.order_items.OrderID, food.orders.DateTime FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID INNER JOIN food.orders ON food.order_items.OrderID = food.orders.ID WHERE (food.order_items.OrderID in (SELECT food.order_items.OrderID FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID WHERE food.items.Name = ? )) AND food.orders.DateTime > ? AND food.orders.DateTime <= ? Order by DateTime ASC';
+        private $getCategoriesCount = 'SELECT categories.Name, COUNT(order_items.ID) as Count FROM food.order_items INNER JOIN food.items ON food.order_items.ItemID = food.items.ID INNER JOIN food.orders ON food.order_items.OrderID = food.orders.ID INNER JOIN food.categories ON food.items.CategoryID = food.categories.ID WHERE orders.DateTime > ? AND orders.DateTime <= ? group by categories.Name order by Count DESC';
 
         public function insert(OrderItem $orderItem){
             global $conn;
@@ -168,6 +169,28 @@
             //$conn->close();
 
             return $items; 
+        }
+
+        public function getAllCategoryCount($start, $end){
+            global $conn;
+            $categories = array();
+			$stmt = $conn->prepare($this->getCategoriesCount);
+            $stmt->bind_param('ss', $start, $end);
+            if($stmt->execute()){
+				$result = $stmt->get_result();
+
+				while($arr = $result->fetch_assoc()){
+					$categories[] = $arr;
+				}
+				
+			}else{
+				echo $stmt->error;
+			}
+
+            $stmt->close();
+            //$conn->close();
+
+            return $categories; 
         }
 
     }

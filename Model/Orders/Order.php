@@ -8,15 +8,17 @@
         private $distinctItems;
         private $json;
         private $datetime;
+        private $firstOrder;
         private $customerId;
 
-        function __construct($id, $totalValue, $totalItems, $distinctItems, $json, $datetime, $customerId){
+        function __construct($id, $totalValue, $totalItems, $distinctItems, $json, $datetime, $firstOrder, $customerId){
             $this->id = $id;
             $this->totalValue = $totalValue;
             $this->totalItems = $totalItems;
             $this->distinctItems = $distinctItems;
             $this->json = $json;
             $this->datetime = $datetime;
+            $this->firstOrder = $firstOrder;
             $this->customerId = $customerId;
         }
 
@@ -66,6 +68,14 @@
 
         public function getDateTime(){
             return $this->datetime;
+        }
+
+        public function setFirstOrder($firstOrder){
+            $this->firstOrder = $firstOrder;
+        }
+
+        public function getFirstOrder(){
+            return $this->firstOrder;
         }
 
         public function setCustomerId($customerId){

@@ -59,8 +59,10 @@
     function refreshSQL(){
         global $conn;
         $conn->begin_transaction();
-        $sqlFile = fopen("../resources/food_ordering_system_v2020.12.20.sql", "r") or die("Unable to open file!");
-        $sql = fread($sqlFile,filesize("../resources/food_ordering_system_v2020.12.20.sql"));
+        $dir = "../resources/";
+        $fileName = "food_ordering_system_v2021.01.15.sql";
+        $sqlFile = fopen($dir.$fileName, "r") or die("Unable to open file!");
+        $sql = fread($sqlFile,filesize($dir.$fileName));
 
         if ($conn->multi_query($sql) === TRUE) {
             echo "Refresh food db successfully";

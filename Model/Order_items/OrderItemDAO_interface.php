@@ -9,6 +9,8 @@
         public function query($keyword);
         public function queryByDate($itemName, $start, $end);
         public function getAllIncName($start, $end);
+        public function getAllCategoryCount($start, $end);
+
 
     }
 ?>

@@ -1,52 +1,31 @@
 <?php
     include '../db_conn.php';
-    include '../Model/Order_items/OrderItemDAO.php';
-    include '../Model/Items/ItemDAO.php';
+    include '../Model/Customer/CustomerDAO.php';
+    include '../Model/Orders/OrderDAO.php';
 
-    $arr_res_count = init_arr_order_item_count();
-    $orderItemDao = new OrderItemDAO();
-    $start = date_format(date_create()->setTimestamp(strtotime("January 1 2017 00:00:00 GMT"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
+    $start = date_format(date_create()->setTimestamp(strtotime("January 1 2018 00:00:00 GMT"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
     $end = date_format(date_create()->setTimestamp(strtotime("now"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
-    $arr_query = $orderItemDao->getAllIncName($start, $end);
-    calTotalCount($arr_query, $arr_res_count);
-    uasort($arr_res_count,"countSort"); //sorting number from max to min
 
-    function calTotalCount($arr_query, &$arr_res_count){
-        foreach ($arr_query as $key => $value) {
-            $arr_res_count[$arr_query[$key]['Name']]++;
-        }
-    }
+    $customerDao = new CustomerDAO();
+    $countCustomers =  $customerDao->getTotalCountByDate($start, $end);
+    //echo $countCustomers;
+    $orderDAO = new OrderDAO();
+    $revenue = $orderDAO->getTotalRevenue($start, $end);
+    $countOrders = $orderDAO->getTotalCountOrd($start, $end);
+    $highestRevenue = $orderDAO->getHighestOrderValue($start, $end);
+    $lowestRevenue = $orderDAO->getLowestOrderValue($start, $end);
+    $avgTotalItem = $orderDAO->getAvgTotalItems($start, $end);
+    $avgDistItem = $orderDAO->getAvgDistinctItems($start, $end);
 
-    function countSort($x, $y)
-    {
-        if ($x==$y) return 0;
-            return ($x > $y) ? -1 : 1;
-    } 
 
-    function init_arr_order_item_count()
-    {
-        $itemDao = new ItemDAO();
-        $itemGetAll = $itemDao->getAll(); //get all items's distinct name
-        $arr = array(); //declare order item so that storing calculate num each item
-        foreach ($itemGetAll as $obj) {
-            $arr[] = $obj->getName();
-        }
-        $arr = array_flip($arr); //value and key are exchanged.
-        //initial value to 0 each order item
-        foreach ($arr as &$value) {
-            $value = 0;
-        }
-        return $arr;
-    }
-
-?>  
+?>
 
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<title>Most Freq items Overall Page</title>
+	<title>Simple number display Page</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
@@ -90,9 +69,9 @@
     <?php include '../Shared/navbar.txt'?>
     <div class="fluid-container"> 
         <div class="row">
-            <div class="col-md-9 card">
+            <div class="col-md-12 card">
                 <div class="card-body">
-                    <h3 >Most frequent bought items <b>Overall</b> </h3>
+                    <h3 >Summary statistic <b>Overall</b> </h3>
                     <h2>
                         <input id='myDate' class="btn btn-info" onChange="updateTotalCountByDate()">
                         <select id='myRange' class="btn btn-success" onChange="updateTotalCountByDate()">
@@ -103,81 +82,70 @@
                         </select>
                     </h2>
                     <div id='showDate' class='text-right'></div>
-                    <canvas id="myChart"></canvas>
+                    <table id='t'>
+                        <tr>
+                            <th>Name</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>Total Customers</td>
+                            <td><?php echo $countCustomers;?></td>
+                        </tr>
+                        <tr>
+                            <td>Total Revenue</td>
+                            <td><?php echo $revenue;?></td>
+                        </tr>
+                        <tr>
+                            <td>Total Orders</td>
+                            <td><?php echo $countOrders;?></td>
+                        </tr>
+                        <tr>
+                            <td>Average Orders/Customers</td>
+                            <td><?php echo round($countOrders/$countCustomers,2);?></td>
+                        </tr>
+                        <tr>
+                            <td>Average Revenue/Orders</td>
+                            <td><?php echo round($revenue/$countOrders,2);?></td>
+                        </tr>
+                        <tr>
+                            <td>Average Revenue/Customers</td>
+                            <td><?php echo round($revenue/$countCustomers,2);?></td>
+                        </tr>
+                        <tr>
+                            <td>Highest order value</td>
+                            <td><?php echo $highestRevenue;?></td>
+                        </tr>
+                        <tr>
+                            <td>Lowest order value</td>
+                            <td><?php echo $lowestRevenue;?></td>
+                        </tr>
+                        <tr>
+                            <td>Average item per order</td>
+                            <td><?php echo round($avgTotalItem,2);?></td>
+                        </tr>
+                        <tr>
+                            <td>Average distinct item per order</td>
+                            <td><?php echo round($avgDistItem,2);?></td>
+                        </tr>
+                    </table>
                 </div>
-            </div>
-            <div class="col-md-3" id="tableArea">
             </div>
         </div>
     </div>
- 
-    <script type="text/javascript">
 
-        //Global options
-        Chart.defaults.global.defaultFontFamily = 'Lato';
-        Chart.defaults.global.defaultFontSize = 16;
-        Chart.defaults.global.defaultFontColor ='#777';
-        var arr_query =  <?php echo json_encode($arr_query, JSON_HEX_TAG); ?>; //total
-        var arr_res_count = <?php echo json_encode($arr_res_count, JSON_HEX_TAG); ?>;
-        //console.log(JSON.stringify(arr_query));
-        console.log(JSON.stringify(arr_res_count));
-        //console.log(arr_query[0]['Name']);
+
+    <script  type="text/javascript">
         
-        let genCOLORs = genColors(arr_res_count);
-        let myChart = document.getElementById('myChart').getContext('2d');
-        var chart = new Chart(myChart, {
-            // The type of chart we want to create
-            type: 'bar',
-            // The data for our dataset
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Most frequently bought items overall',
-                    borderColor: genCOLORs,
-                    backgroundColor: genCOLORs,
-                    data: []
-                }]
-            },
-            // Configuration options go here
-            options: {
-                    scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-
-
         $(window).on("load", function(){
             
             //set date as today
             setToday();
 
-            //update chart when the date is load
-            updateChart(arr_res_count);
-            updateTable(arr_res_count);
+            //update table when the date is load
+            //updateTable();
 
         });
 
-        function genColors(arr_res_count){
-            var colors = [];
-            var num = Object.keys(arr_res_count).length;
-            for (let index = 0; index < num; index++) {
-                colors.push(randomColor());
-            }
-            return colors;
-        }
-        function randomColor() {
-            var r = Math.floor(Math.random() * 255);
-            var g = Math.floor(Math.random() * 255);
-            var b = Math.floor(Math.random() * 255);
-            return "rgb(" + r + "," + g + "," + b + ")";
-        }
-
-        
         function setToday(){
             flatpickr("#myDate", {dateFormat: "Y-m-d"});
             var now = new Date();
@@ -187,28 +155,6 @@
             $("#myDate").val(today);
             //console.log(today);
         }
-
-        function updateTable(arr_res_count){
-            $("#tableArea").empty().append("<table id='t'><tr><th>Name</th><th>Count</th></></table>");
-            $("#t").each(function(){
-                for (const key in arr_res_count) {
-                    $(this).append("<tr><td>"+key+"</td><td>"+arr_res_count[key]+"</td></tr>");
-                }
-            })
-        }
-        
-        function updateChart(arr_res_count)
-		{
-            //console.log(arr_res_count);
-            var labels = Object.keys(arr_res_count);
-            var info = Object.values(arr_res_count);
-            //console.log(info);
-
-			chart.data.datasets[0].data = info;
-			chart.data.labels = labels;
-            chart.update();
-            
-		}
 
         function updateTotalCountByDate(){
             var date_end = new Date($("#myDate").val());
@@ -245,42 +191,33 @@
             return date.getFullYear() + "-" + (month) + "-" + (day);
         }
 
-        function initCount(arr_res_count){
-            //console.log(JSON.stringify(arr_res_count));
-            for (const key in arr_res_count) {
-                arr_res_count[key] = 0;
-            }
-            return arr_res_count;
-        }
-
-		function filterOfDateTime(date_start, date_end)
+        function filterOfDateTime(date_start, date_end)
 		{
              $.ajax({
-                url : 'http://<?php echo $_SERVER['HTTP_HOST'];?>/Controller/getDataOutputForMostFreqItems.php',
+                url : 'http://<?php echo $_SERVER['HTTP_HOST'];?>/Controller/getUpdateForSummaryData.php',
                 data : {
-                            action : 'overall',
-                            arr_res_count :	JSON.stringify(arr_res_count),
                             start :	date_start,
                             end :	date_end 
                         },
                         type : 'POST',
                         dataType:"json",
                         error : function(xhr) {
+                            console.log(xhr.status);
+                            console.log(xhr.responseText);
                             alert('Ajax request error');
                         },
-                        success : function(result) {		  					     
-                            updateChart(result); 
+                        success : function(result) {		  					
                             updateTable(result);
                         }
             });
 		}
 
+        function updateTable(summary){
+            $("#t td:odd").empty().each(function(index, value){
+                $(this).append(summary[index]);
+            });
+        }
 
     </script>
-
-    
 </body>
 </html>
-
-
-

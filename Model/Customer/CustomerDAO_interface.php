@@ -5,5 +5,7 @@
         public function findOnePK($id);
         public function getAll();
         public function query($keyword,$attribute);
+        public function getTotalCountByDate($start,$end);
+        public function getPeopleJoinDay($start,$end);
     }
 ?>

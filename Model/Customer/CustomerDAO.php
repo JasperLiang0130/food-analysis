@@ -5,6 +5,8 @@
         private $insertSQL = "INSERT INTO customers (PhoneNumber, Email, Name, TotalOrders, TotalValue, FirstOrderDateTime, MostRecentOrderDateTime) VALUES (?,?,?,?,?,?,?)";
         private $findpkSQL = 'SELECT * FROM customers WHERE ID = ?';
         private $getAllSQL = 'SELECT * FROM customers';
+        private $getTotalByDateSQL = 'SELECT COUNT(ID) as count FROM customers WHERE customers.MostRecentOrderDateTime > ? AND customers.MostRecentOrderDateTime <= ?';
+        private $getJoinDaySQL = 'SELECT COUNT(ID) as Count, DAYOFWEEK(customers.FirstOrderDateTime) as Day FROM customers where customers.FirstOrderDateTime > ? AND customers.FirstOrderDateTime <= ? group by Day order by Day;';
 
         public function insert(Customer $customer){
             global $conn;
@@ -93,6 +95,40 @@
             //$conn->close();
 
             return $list; 
+        }
+
+        public function getTotalCountByDate($start,$end){
+            global $conn;
+            $totalCount = null;
+            $stmt = $conn->prepare($this->getTotalByDateSQL);
+            $stmt->bind_param('ss', $start,$end);
+            if($stmt->execute()){
+                $result = $stmt->get_result();
+                $totalCount = $result->fetch_assoc();
+            }else{
+                echo $stmt->error;
+            }
+            $stmt->close();
+            //$conn->close();
+            return $totalCount['count'];
+        }
+
+        public function getPeopleJoinDay($start,$end){
+            global $conn;
+            $counts = array();
+            $stmt = $conn->prepare($this->getJoinDaySQL);
+            $stmt->bind_param('ss', $start,$end);
+            if($stmt->execute()){
+                $result = $stmt->get_result();
+                while($arr = $result->fetch_assoc()){
+					$counts[] = $arr;
+				}
+            }else{
+                echo $stmt->error;
+            }
+            $stmt->close();
+            //$conn->close();
+            return $counts;
         }
 
     }
