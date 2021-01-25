@@ -1,17 +1,33 @@
 <?php
-    include '../db_conn.php';
+    include '../Dbh.php';
     include '../Model/Orders/OrderDAO.php';
     include '../Model/Customer/CustomerDAO.php';
-
+    $db = new DBh();
+    $conn = $db->getConnection();
+    $db->begin_transaction();
     $orderDao = new OrderDAO();
     $customerDao = new CustomerDAO();
     $start = date_format(date_create()->setTimestamp(strtotime("January 1 1970 00:00:00 GMT"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
     $end = date_format(date_create()->setTimestamp(strtotime("now"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
     $arr_res_count = $orderDao->getPopularDays($start, $end);
     $arr_res_count2 = $orderDao->getPopularHoursByDay($start, $end);
-    $arr_res_count3 = $customerDao->getPeopleJoinDay($start, $end);
-    $arr_res_count4 = $orderDao->getTotalOrders($start, $end);
-
+     $arr_res_count3 = $customerDao->getPeopleJoinDay(getDateFormat($start, $end), $start, $end);
+    $arr_res_count4 = $orderDao->getTotalOrders(getDateFormat($start, $end), $start, $end);
+    $db->commit();
+    function getDateFormat($start, $end){
+        $diff = intval(date_diff(date_create($start), date_create($end))->format("%a"));
+        if($diff <= 28)
+        {
+            return "%Y-%m-%d";
+        }
+        else if($diff > 730) //over than 2y
+        {
+            return "%Y";
+        }
+        else{ //month
+            return "%Y-%m";
+        }
+    }
 ?>  
 
 <!DOCTYPE html>
@@ -86,8 +102,9 @@
         var arr_res_count2 = <?php echo json_encode($arr_res_count2, JSON_HEX_TAG); ?>;
         var arr_res_count3 = <?php echo json_encode($arr_res_count3, JSON_HEX_TAG); ?>;
         var arr_res_count4 = <?php echo json_encode($arr_res_count4, JSON_HEX_TAG); ?>;
-        // console.log(JSON.stringify(arr_res_count4));
-        // console.log(getOrderByFirstOrder((arr_res_count4)));
+        
+        console.log(JSON.stringify(arr_res_count4));
+        console.log(getTotalOrder(arr_res_count4));
         
         let myChart = document.getElementById('myChart').getContext('2d');
         let chart = new OwnChart(myChart, 'bar', 1, false);
@@ -95,6 +112,8 @@
         chart.setBorderColor(colors); 
         chart.setBackgroundColor(colors); 
         // chart.setXAxis(Object.keys(arr_res_count));
+        chart.setDatasetLabels(['Orders']);
+        chart.setTitle('Most popular Days for orders');
         chart.setXAxis(['Sun','Mon','Tues','Wed','Thur','Fri','Sat']); //1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday.
         
         let myChart2 = document.getElementById('myChart2').getContext('2d');
@@ -102,8 +121,10 @@
         let colors2 = [randomColor(), randomColor(), randomColor(), randomColor(),randomColor(), randomColor(), randomColor()];
         chart2.setBorderColor(colors2); 
         chart2.setBackgroundColor(colors2); 
-        let titles = ['Sun','Mon','Tues','Wed','Thur','Fri','Sat'];
-        chart2.setTitles(titles);
+        chart2.setDisplayLegend(true);
+        chart2.setTitle('Most popular Hours by days for orders');
+        let dsLabels2 = ['Sun orders','Mon orders','Tues orders','Wed orders','Thur orders','Fri orders','Sat orders'];
+        chart2.setDatasetLabels(dsLabels2);
         chart2.setXAxis(['0:00', '1:00', '2:00', '3:00', '4:00', '5:00', '6:00', '7:00', '8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00']);
 
         let myChart3 = document.getElementById('myChart3').getContext('2d');
@@ -111,17 +132,16 @@
         let colors3 = [genColors(arr_res_count3)];
         chart3.setBorderColor(colors3); 
         chart3.setBackgroundColor(colors3); 
-        // chart.setXAxis(Object.keys(arr_res_count));
-        chart3.setXAxis(['Sun','Mon','Tues','Wed','Thur','Fri','Sat']); //1=Sunday, 2=Monday, 3=Tuesday, 4=Wednesday, 5=Thursday, 6=Friday, 7=Saturday.
+        chart3.setXAxis(getPeopleJoinXaxis(arr_res_count3)); 
 
         let myChart4 = document.getElementById('myChart4').getContext('2d');
         let chart4 = new OwnChart(myChart4, 'bar', 2, true);
         let colors4 = [randomColor(), randomColor()];
         chart4.setBorderColor(colors4); 
         chart4.setBackgroundColor(colors4); 
-        let titles4 = ['Existing Customers order', 'New Customers order'];
-        chart4.setTitles(titles4);
-        chart4.setXAxis(['Sun','Mon','Tues','Wed','Thur','Fri','Sat']);
+        let dsLabels4 = ['Existing Customers order', 'New Customers order'];
+        chart4.setDatasetLabels(dsLabels4);
+        chart4.setXAxis(getTotalOrderXaxis(arr_res_count4));
 
         $(window).on("load", function(){
             
@@ -132,15 +152,25 @@
             chart.updatedChart([getDayValue(arr_res_count)]);
             chart2.updatedChart(getHourValue(arr_res_count2));
             chart3.updatedChart([getPeopleJoinCount(arr_res_count3)]);
-            chart4.updatedChart(getOrderByFirstOrder(arr_res_count4));
+            chart4.updatedChart(getTotalOrder(arr_res_count4));
 
         });
 
+        
+
         function getPeopleJoinCount(arr){
-            res = [0, 0, 0, 0, 0, 0, 0];
-            for (const key in arr) {
-                res[arr[key]['Day']-1] = parseInt(arr[key]['Count']);
-            }
+            res = [];
+            arr.forEach(element => {
+                res.push(element['Count']);
+            });
+            return res;
+        }
+
+        function getPeopleJoinXaxis(arr){
+            res = [];
+            arr.forEach(element => {
+                res.push(element['Df']);
+            });
             return res;
         }
 
@@ -152,18 +182,29 @@
             return res;
         }
 
-        function getOrderByFirstOrder(arr){
-            out = [];
-            //initial out
-            for(var i = 0; i < 2; i++){
-                var week = [0, 0, 0, 0, 0, 0, 0];
-                out.push(week);
-            }
-            //assign the value
-            for (const key in arr) {
-                out[arr[key]['FirstOrder']][arr[key]['Day']-1] = parseInt(arr[key]['sumItem']);
-            }
-            return out;
+        function getTotalOrderXaxis(arr){
+            axis = [];
+            arr.forEach(element => {
+                if(element['FirstOrder'] == 0){
+                    axis.push(element['Df']);
+                }
+            });
+            return axis;
+        }
+        
+        function getTotalOrder(arr){
+            first = {};
+            exist = {};
+            arr.forEach(element => {
+                if(element['FirstOrder'] == 0){
+                    exist[element['Df']] = element['Count'];
+                    first[element['Df']] = 0; //initial 0, some of df have in the exist but not in the first. 
+                }else{
+                    first[element['Df']] = element['Count'];
+                }
+            });
+            //console.log([exist, first]);
+            return [exist, first];
         }
 
         function getHourValue(arr){
@@ -260,9 +301,11 @@
                         success : function(result) {		  					     
                             console.log(result);
                             chart.updatedChart([getDayValue(result[0])]);
-                            chart2.updatedChart(getHourValue(result[1]));
+                            chart2.updatedChart(getHourValue(result[1]));   
+                            chart3.setXAxis(getPeopleJoinXaxis(result[2])); 
                             chart3.updatedChart([getPeopleJoinCount(result[2])]);
-                            chart4.updatedChart(getOrderByFirstOrder(result[3]));
+                            chart4.setXAxis(getTotalOrderXaxis(result[3])); 
+                            chart4.updatedChart(getTotalOrder(result[3]));
                         }
             });
 		}

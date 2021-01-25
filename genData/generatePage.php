@@ -52,26 +52,24 @@
     
 </body>
 </html>
-
 <?php
-    include '../db_conn.php';
-    refreshSQL();
-    function refreshSQL(){
-        global $conn;
-        $conn->begin_transaction();
-        $dir = "../resources/";
-        $fileName = "food_ordering_system_v2021.01.15.sql";
-        $sqlFile = fopen($dir.$fileName, "r") or die("Unable to open file!");
-        $sql = fread($sqlFile,filesize($dir.$fileName));
+	include '../Dbh.php';
+	refreshSQL(); //delete previous data
+	function refreshSQL(){
 
-        if ($conn->multi_query($sql) === TRUE) {
-            echo "Refresh food db successfully";
-        } else {
-            echo $conn->error;
-        }
+		$db = new DBh();
+		$conn = $db->getConnection();
+		$db->begin_transaction();
+		$dir = "../resources/";
+		$fileName = "food_ordering_system_v2021.01.20.sql";
+		$sqlFile = fopen($dir.$fileName, "r") or die("Unable to open file!");
+		$sql = fread($sqlFile,filesize($dir.$fileName));
 
-        $conn->commit();
-        
-    }
-
+		if ($conn->multi_query($sql) === TRUE) {
+			echo "Refresh food db successfully<br>";
+		} else {
+			echo $conn->error;
+		}
+		$db->commit();
+	}
 ?>

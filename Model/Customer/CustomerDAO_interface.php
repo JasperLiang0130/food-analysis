@@ -6,6 +6,6 @@
         public function getAll();
         public function query($keyword,$attribute);
         public function getTotalCountByDate($start,$end);
-        public function getPeopleJoinDay($start,$end);
+        public function getPeopleJoinDay($df, $start,$end);
     }
 ?>

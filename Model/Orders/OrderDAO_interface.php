@@ -14,6 +14,6 @@
         public function getAvgDistinctItems($start, $end);
         public function getPopularDays($start, $end);
         public function getPopularHoursByDay($start, $end);
-        public function getTotalOrders($start, $end);
+        public function getTotalOrders($df, $start, $end);
     }
 ?>

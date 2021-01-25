@@ -6,10 +6,11 @@
         private $findpkSQL = 'SELECT * FROM customers WHERE ID = ?';
         private $getAllSQL = 'SELECT * FROM customers';
         private $getTotalByDateSQL = 'SELECT COUNT(ID) as count FROM customers WHERE customers.MostRecentOrderDateTime > ? AND customers.MostRecentOrderDateTime <= ?';
-        private $getJoinDaySQL = 'SELECT COUNT(ID) as Count, DAYOFWEEK(customers.FirstOrderDateTime) as Day FROM customers where customers.FirstOrderDateTime > ? AND customers.FirstOrderDateTime <= ? group by Day order by Day;';
+        private $getJoinDaySQL = 'SELECT date_format(customers.FirstOrderDateTime, ?) as Df, COUNT(ID) as Count FROM food.customers where customers.FirstOrderDateTime > ? AND customers.FirstOrderDateTime <= ? group by Df order by Df'; //date_format is "%Y-%m-%d"
 
         public function insert(Customer $customer){
             global $conn;
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->insertSQL);
             $phone = $customer->getPhoneNum();
             $email = $customer->getEmail();
@@ -24,14 +25,14 @@
                 $last_id = $conn->insert_id;
                 echo "New customer created successfully. Last inserted ID is: " . $last_id."<br>";
             }
-            
+
 			$stmt->close();
-			//$conn->close();
+			// $conn->close();
         }
 
         public function findOnePK($id){
             global $conn;
-            
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->findpkSQL);
             $stmt->bind_param('i', $id);
             if($stmt->execute()){
@@ -41,14 +42,14 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return new Customer($arr['ID'], $arr['PhoneNumber'], $arr['Email'], $arr['Name'], $arr['TotalOrders'], $arr['TotalValue'], $arr['FirstOrderDateTime'], $arr['MostRecentOrderDateTime']);
 
         }
 
         public function getAll(){
             global $conn;
-			
+			// $conn = $this->connect();
 			$list = array();
 			$stmt = $conn->prepare($this->getAllSQL);
 
@@ -63,13 +64,14 @@
 			}
 
 			$stmt->close();
-			//$conn->close();
+			// $conn->close();
 
 			return $list; //return multi-object e.g. array(object,object......)
         }
 
         public function query($keyword, $attribute){
             global $conn;
+            // $conn = $this->connect();
             $searchSQL ='SELECT * FROM customers WHERE '.$attribute.' LIKE ?';
             //echo $searchSQL;
             $keyword = htmlspecialchars($keyword); //change characters in html. e.g. < is changed to &lt;
@@ -92,13 +94,14 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $list; 
         }
 
         public function getTotalCountByDate($start,$end){
             global $conn;
+            // $conn = $this->connect();
             $totalCount = null;
             $stmt = $conn->prepare($this->getTotalByDateSQL);
             $stmt->bind_param('ss', $start,$end);
@@ -109,15 +112,16 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $totalCount['count'];
         }
 
-        public function getPeopleJoinDay($start,$end){
+        public function getPeopleJoinDay($df, $start,$end){
             global $conn;
+            // $conn = $this->connect();
             $counts = array();
             $stmt = $conn->prepare($this->getJoinDaySQL);
-            $stmt->bind_param('ss', $start,$end);
+            $stmt->bind_param('sss', $df, $start, $end);
             if($stmt->execute()){
                 $result = $stmt->get_result();
                 while($arr = $result->fetch_assoc()){
@@ -127,7 +131,7 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $counts;
         }
 

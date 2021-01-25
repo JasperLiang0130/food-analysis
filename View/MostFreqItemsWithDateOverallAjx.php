@@ -1,8 +1,10 @@
 <?php
-    include '../db_conn.php';
+    include '../Dbh.php';
     include '../Model/Order_items/OrderItemDAO.php';
     include '../Model/Items/ItemDAO.php';
-
+    $db = new DBh();
+    $conn = $db->getConnection();
+    $db->begin_transaction();
     $arr_res_count = init_arr_order_item_count();
     $orderItemDao = new OrderItemDAO();
     $start = date_format(date_create()->setTimestamp(strtotime("January 1 2017 00:00:00 GMT"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
@@ -10,7 +12,8 @@
     $arr_query = $orderItemDao->getAllIncName($start, $end);
     calTotalCount($arr_query, $arr_res_count);
     uasort($arr_res_count,"countSort"); //sorting number from max to min
-
+    $db->commit();
+    
     function calTotalCount($arr_query, &$arr_res_count){
         foreach ($arr_query as $key => $value) {
             $arr_res_count[$arr_query[$key]['Name']]++;

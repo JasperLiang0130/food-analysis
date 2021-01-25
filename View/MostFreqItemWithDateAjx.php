@@ -1,8 +1,9 @@
 <?php
-    include '../db_conn.php';
+    include '../Dbh.php';
     include '../Model/Order_items/OrderItemDAO.php';
     include '../Model/Items/ItemDAO.php';
-
+    $db = new DBh();
+    $conn = $db->getConnection();
     $arr_res_count = init_arr_order_item_count();
 
     function countSort($x, $y)

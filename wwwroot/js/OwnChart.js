@@ -12,7 +12,6 @@ class OwnChart{
                     xAxes: [{ stacked: false }],
                     yAxes: [{
                         ticks: {
-                            display: false,
                             beginAtZero: true
                         }
                     },
@@ -21,8 +20,14 @@ class OwnChart{
                         display: false
                     }
                     ]
+                },
+                legend: {display: true},
+                title: {
+                    display: false,
+                    text: ''
                 }
-                };
+            };
+
                 
         if(model == 'pie'){
             opt = {};
@@ -51,7 +56,10 @@ class OwnChart{
             this.chart.options.scales.yAxes[0].stacked = true;
         }
 
-        
+        if (model = 'bar') {
+            this.chart.options.legend.display = false;
+        }
+
         for (let index = 1; index < numOfSets; index++) {
             var newDataset = {
                 label: 'dataset'+(index+1), //display value of each column
@@ -66,17 +74,28 @@ class OwnChart{
     }
 
     //titles is array
-    setTitles(titles){
+    setDatasetLabels(labels){
         var len = this.chart.data.datasets.length;
         for (let index = 0; index < len; index++) {
-            this.chart.data.datasets[index].label = titles[index];
+            this.chart.data.datasets[index].label = labels[index];
         }
         this.chart.update();
+    }
+
+    setTitle(title){
+        this.chart.options.title.display = true;
+        this.chart.options.title.text = title;
+        this.chart.update();
+    }
+
+    setDisplayLegend(bool){
+        this.chart.options.legend.display = bool;
     }
 
     //xlabels is array
     setXAxis(xlabels){
         this.chart.data.labels = xlabels;
+        this.chart.update();
     }
 
     //bdColor is array or 2d array
@@ -96,13 +115,14 @@ class OwnChart{
         }
         this.chart.update();
     }
+
     //arr format: []
     updatedChart(arr) {
         // console.log(arr);
 
         var len = this.chart.data.datasets.length;
         for (let index = 0; index < len; index++) {
-            console.log(Object.values(arr[index]));
+            // console.log(Object.values(arr[index]));
             this.chart.data.datasets[index].data = Object.values(arr[index]);
         }
         this.chart.update();

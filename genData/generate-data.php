@@ -13,7 +13,8 @@
 <body>
     <?php
 
-        include '../db_conn.php';
+        // include '../db_conn.php';
+        include '../Dbh.php';
         include '../Model/Customer/CustomerDAO.php';
         include '../Model/Items/ItemDAO.php';
         include '../Model/Option_Sets/OptionSetDAO.php';
@@ -26,12 +27,19 @@
         include '../Shared/navbar.txt';
         $customerQt = intval($_POST["customer"]);
         $orderQt = intval($_POST["order"]);
-
-        // echo 'customer: '.$customerQt.'<br>';
-        // echo 'order: '.$orderQt.'<br>';
         
+        $db = new DBh();
+        $conn = $db->getConnection();
+        
+        $db->begin_transaction();
         generateCustomer($customerQt);
-        genOrder($orderQt);
+        
+        $start_time = microtime(true); 
+        generateOrder($orderQt);
+        $end_time = microtime(true); 
+        $execution_time = ($end_time - $start_time); 
+        echo " Execution time of script = ".$execution_time." sec"; 
+        $db->commit();
 
     ?>
 </body>

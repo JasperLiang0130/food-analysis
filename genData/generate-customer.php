@@ -7,9 +7,9 @@
 
     //generateCustomer(100);
     
+    
+        
     function generateCustomer($num){
-        global $conn;
-        $conn->begin_transaction();
 
         $customerDao = new CustomerDAO();
         for ($i=0; $i < $num; $i++) { 
@@ -27,12 +27,12 @@
             $customerDao->insert($customer);
         }
 
-        $conn->commit();
     }
 
     function generateNum($start, $end){
         return mt_rand($start, $end);
     }
+
     function generateDateTime(){
         $timestamp = mt_rand(strtotime("January 1 2000 00:00:00 GMT"), strtotime("now"));
         //echo($timestamp. "<br>");
@@ -40,6 +40,7 @@
 
         return strval($dt); //string type
     }
+
     function generateName(){
         $syllable = rand(2,4); //2~4 or mt_rand()
         //print_o($syllable);
@@ -73,5 +74,7 @@
         }
         return '04'.$str_num;
     }
+
+
 
 ?>

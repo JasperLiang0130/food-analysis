@@ -1,6 +1,6 @@
 <?php
 
-    include '../db_conn.php';
+    include '../Dbh.php';
     include '../Model/Customer/CustomerDAO.php';
     include '../Model/Orders/OrderDAO.php';
 
@@ -8,9 +8,12 @@
     $end = $_POST["end"]; //end date
     $summary = array();
 
+    $db = new DBh();
+    $conn = $db->getConnection();
     $customerDao = new CustomerDAO();
     $orderDAO = new OrderDAO();
 
+    $db->begin_transaction();
     $countCustomers =  $customerDao->getTotalCountByDate($start, $end);
     $revenue = $orderDAO->getTotalRevenue($start, $end);
     $countOrders = $orderDAO->getTotalCountOrd($start, $end);
@@ -18,7 +21,8 @@
     $lowestRevenue = $orderDAO->getLowestOrderValue($start, $end);
     $avgTotalItem = $orderDAO->getAvgTotalItems($start, $end);
     $avgDistItem = $orderDAO->getAvgDistinctItems($start, $end);
-
+    $db->commit();
+    
     $summary[] = $countCustomers;
     $summary[] = $revenue;
     $summary[] = $countOrders;

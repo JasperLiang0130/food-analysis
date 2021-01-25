@@ -1,8 +1,10 @@
 <?php
-    include '../db_conn.php';
+    include '../Dbh.php';
     include '../Model/Customer/CustomerDAO.php';
     include '../Model/Orders/OrderDAO.php';
-
+    $db = new DBh();
+    $conn = $db->getConnection();
+    $db->begin_transaction();
     $start = date_format(date_create()->setTimestamp(strtotime("January 1 2018 00:00:00 GMT"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
     $end = date_format(date_create()->setTimestamp(strtotime("now"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
 
@@ -16,7 +18,7 @@
     $lowestRevenue = $orderDAO->getLowestOrderValue($start, $end);
     $avgTotalItem = $orderDAO->getAvgTotalItems($start, $end);
     $avgDistItem = $orderDAO->getAvgDistinctItems($start, $end);
-
+    $db->commit();
 
 ?>
 

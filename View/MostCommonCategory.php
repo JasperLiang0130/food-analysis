@@ -1,13 +1,14 @@
 <?php
-    include '../db_conn.php';
+    include '../Dbh.php';
     include '../Model/Order_items/OrderItemDAO.php';
-
-    
+    $db = new DBh();
+    $conn = $db->getConnection();
+    $db->begin_transaction();
     $orderItemDao = new OrderItemDAO();
     $start = date_format(date_create()->setTimestamp(strtotime("January 1 1970 00:00:00 GMT"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
     $end = date_format(date_create()->setTimestamp(strtotime("now"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
     $arr_res_count = $orderItemDao->getAllCategoryCount($start, $end);
-
+    $db->commit();
 ?>  
 
 <!DOCTYPE html>

@@ -15,11 +15,12 @@
         private $getAvgDistinctItemSQL = 'SELECT AVG(DistinctItems) as avgDItem FROM orders WHERE orders.DateTime > ? AND orders.DateTime <= ?';
         private $getPopDaysSQL = 'SELECT SUM(orders.TotalItems) as sumItem, DAYOFWEEK(orders.DateTime) as Day FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Day order by Day';
         private $getPopHoursSQL = 'SELECT SUM(orders.TotalItems) as sumItem, DAYOFWEEK(orders.DateTime) as Day , HOUR(orders.DateTime) as Hour FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Day, Hour order by Day, Hour';
-        private $getTotalOrdersSQL = 'SELECT SUM(orders.TotalItems) as sumItem, DAYOFWEEK(orders.DateTime) as Day, orders.FirstOrder FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Day, orders.FirstOrder order by orders.FirstOrder, Day';
+        private $getTotalOrdersSQL = 'SELECT date_format(orders.DateTime, ?) as Df, COUNT(ID) as Count, orders.FirstOrder FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Df, orders.FirstOrder order by orders.FirstOrder, Df'; //date_format is "%Y-%m-%d"
 
 
         public function insert(Order $order){
             global $conn;
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->insertSQL);
             $values = $order->getTotalValue();
             $items = $order->getTotalItems();
@@ -37,12 +38,13 @@
 
             $order->setId($last_id);
 			$stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $order; // return complete order include id
         }
 
         public function update(Order $order){
             global $conn;
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->updateSQL);
             $values = $order->getTotalValue();
             $items = $order->getTotalItems();
@@ -59,13 +61,13 @@
             }
 
 			$stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $order; // return complete order include id
         }
 
         public function findOnePK($id){
             global $conn;
-            
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->findpkSQL);
             $stmt->bind_param('i', $id);
             if($stmt->execute()){
@@ -75,14 +77,14 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return new Order($arr['ID'], $arr['TotalValue'], $arr['TotalItems'], $arr['DistinctItems'], $arr['JSON'], $arr['DateTime'], $arr['FirstOrder'], $arr['CustomerID']);
 
         }
 
         public function getAll(){
             global $conn;
-			
+			// $conn = $this->connect();
 			$list = array();
 			$stmt = $conn->prepare($this->getAllSQL);
 
@@ -97,13 +99,14 @@
 			}
 
 			$stmt->close();
-			//$conn->close();
+			// $conn->close();
 
 			return $list; //return multi-object e.g. array(object,object......)
         }
 
         public function query($keyword, $attribute){
             global $conn;
+            // $conn = $this->connect();
             $searchSQL ='SELECT * FROM orders WHERE '.$attribute.' LIKE ?';
             //echo $searchSQL;
             $keyword = htmlspecialchars($keyword); //change characters in html. e.g. < is changed to &lt;
@@ -126,7 +129,7 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $list; 
         }
@@ -134,6 +137,7 @@
         public function getTotalRevenue($start, $end){
             
             global $conn;
+            // $conn = $this->connect();
             $totalRev = null;
             $stmt = $conn->prepare($this->getTotalRevenueSQL);
             $stmt->bind_param('ss', $start,$end);
@@ -144,7 +148,7 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $totalRev['revenue'];
 
         }
@@ -152,6 +156,7 @@
         public function getTotalCountOrd($start, $end){
 
             global $conn;
+            // $conn = $this->connect();
             $totalCount = null;
             $stmt = $conn->prepare($this->getTotalCountOrdSQL);
             $stmt->bind_param('ss', $start,$end);
@@ -162,7 +167,7 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $totalCount['orders'];
 
         }
@@ -170,6 +175,7 @@
         public function getHighestOrderValue($start, $end){
 
             global $conn;
+            // $conn = $this->connect();
             $max = null;
             $stmt = $conn->prepare($this->getMaxOrdValueSQL);
             $stmt->bind_param('ss', $start,$end);
@@ -180,13 +186,14 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $max['max'];
 
         }
         public function getLowestOrderValue($start, $end){
 
             global $conn;
+            // $conn = $this->connect();
             $min = null;
             $stmt = $conn->prepare($this->getMinOrdValueSQL);
             $stmt->bind_param('ss', $start,$end);
@@ -197,13 +204,14 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $min['min'];
 
         }
 
         public function getAvgTotalItems($start, $end){
             global $conn;
+            // $conn = $this->connect();
             $avg = null;
             $stmt = $conn->prepare($this->getAvgTotalItemSQL);
             $stmt->bind_param('ss', $start,$end);
@@ -214,11 +222,12 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $avg['avgItem'];
         }
         public function getAvgDistinctItems($start, $end){
             global $conn;
+            // $conn = $this->connect();
             $avg = null;
             $stmt = $conn->prepare($this->getAvgDistinctItemSQL);
             $stmt->bind_param('ss', $start,$end);
@@ -229,12 +238,13 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $avg['avgDItem'];
         }
 
         public function getPopularDays($start, $end){
             global $conn;
+            // $conn = $this->connect();
             $orders = array();
 			$stmt = $conn->prepare($this->getPopDaysSQL);
             $stmt->bind_param('ss', $start, $end);
@@ -250,13 +260,14 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $orders; 
         }
 
         public function getPopularHoursByDay($start, $end){
             global $conn;
+            // $conn = $this->connect();
             $orders = array();
 			$stmt = $conn->prepare($this->getPopHoursSQL);
             $stmt->bind_param('ss', $start, $end);
@@ -272,31 +283,28 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $orders; 
         }
 
-        public function getTotalOrders($start, $end){
+        public function getTotalOrders($df, $start, $end){
             global $conn;
-            $orders = array();
-			$stmt = $conn->prepare($this->getTotalOrdersSQL);
-            $stmt->bind_param('ss', $start, $end);
+            // $conn = $this->connect();
+            $counts = array();
+            $stmt = $conn->prepare($this->getTotalOrdersSQL);
+            $stmt->bind_param('sss', $df, $start, $end);
             if($stmt->execute()){
-				$result = $stmt->get_result();
-
-				while($arr = $result->fetch_assoc()){
-					$orders[] = $arr;
+                $result = $stmt->get_result();
+                while($arr = $result->fetch_assoc()){
+					$counts[] = $arr;
 				}
-				
-			}else{
-				echo $stmt->error;
-			}
-
+            }else{
+                echo $stmt->error;
+            }
             $stmt->close();
-            //$conn->close();
-
-            return $orders; 
+            // $conn->close();
+            return $counts;
         }
 
     }

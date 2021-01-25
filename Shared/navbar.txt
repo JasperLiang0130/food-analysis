@@ -25,6 +25,12 @@
           <a class="nav-link" href="../View/SimpleNumberDisplay.php">Summary</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link" href="../View/MostPopularDisplay.php">MostPopular</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="../View/MostCommonCategory.php">CommonCategory</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="../genData/generatePage.php">Generate</a>
         </li>
       </ul>

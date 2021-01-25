@@ -13,6 +13,7 @@
 
         public function insert(OrderItem $orderItem){
             global $conn;
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->insertSQL);
             $quantity = $orderItem->getQuantity();
             $singlevalue = $orderItem->getSingleValue();
@@ -27,13 +28,13 @@
             }
             $orderItem->setId($last_id);
 			$stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $orderItem;
         }
 
         public function findOnePK($id){
             global $conn;
-            
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->findpkSQL);
             $stmt->bind_param('i', $id);
             if($stmt->execute()){
@@ -43,14 +44,14 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return new OrderItem($arr['ID'], $arr['Quantity'], $arr['SingleValue'], $arr['TotalValue'], $arr['ItemID'], $arr['OrderID']);
 
         }
 
         public function getAll(){
             global $conn;
-			
+			// $conn = $this->connect();
 			$list = array();
 			$stmt = $conn->prepare($this->getAllSQL);
 
@@ -65,13 +66,14 @@
 			}
 
 			$stmt->close();
-			//$conn->close();
+			// $conn->close();
 
 			return $list; //return multi-object e.g. array(object,object......)
         }
 
         public function search($keyword, $attribute){
             global $conn;
+            // $conn = $this->connect();
             $searchSQL ='SELECT * FROM order_items WHERE '.$attribute.' LIKE ?';
             //echo $searchSQL;
             $keyword = htmlspecialchars($keyword); //change characters in html. e.g. < is changed to &lt;
@@ -94,13 +96,14 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $list; 
         }
 
         public function query($keyword){
             global $conn;
+            // $conn = $this->connect();
             $keyword = htmlspecialchars($keyword); //change characters in html. e.g. < is changed to &lt;
 			$keyword = $conn->real_escape_string($keyword); //make sure no SQL injection
             
@@ -120,13 +123,14 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $items; 
         }
 
         public function getAllIncName($start, $end){
             global $conn;
+            // $conn = $this->connect();
             $items = array();
 			$stmt = $conn->prepare($this->getAllIncNameSQL);
             $stmt->bind_param('ss', $start, $end);
@@ -142,14 +146,14 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $items; 
         }
 
         public function queryByDate($itemName, $start, $end){
             global $conn;
-            
+            // $conn = $this->connect();
             $items = array();
 			$stmt = $conn->prepare($this->getAllFilterDateSQL);
             $stmt->bind_param('sss', $itemName, $start, $end);
@@ -166,13 +170,14 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $items; 
         }
 
         public function getAllCategoryCount($start, $end){
             global $conn;
+            // $conn = $this->connect();
             $categories = array();
 			$stmt = $conn->prepare($this->getCategoriesCount);
             $stmt->bind_param('ss', $start, $end);
@@ -188,7 +193,7 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $categories; 
         }

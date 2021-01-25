@@ -9,6 +9,7 @@
 
         public function insert(OrderOption $orderOption){
             global $conn;
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->insertSQL);
             $value = $orderOption->getValue();
             $orderItemId = $orderOption->getOrderItemId();
@@ -22,13 +23,13 @@
             }
             $orderOption->setId($last_id);
 			$stmt->close();
-            //$conn->close();
+            // $conn->close();
             return $orderOption;
         }
 
         public function findOnePK($id){
             global $conn;
-            
+            // $conn = $this->connect();
             $stmt = $conn->prepare($this->findpkSQL);
             $stmt->bind_param('i', $id);
             if($stmt->execute()){
@@ -38,14 +39,14 @@
                 echo $stmt->error;
             }
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
             return new OrderOption($arr['ID'], $arr['Value'], $arr['OrderItemID'], $arr['OptionID'], $arr['OptionSetID']);
 
         }
 
         public function getAll(){
             global $conn;
-			
+			// $conn = $this->connect();
 			$list = array();
 			$stmt = $conn->prepare($this->getAllSQL);
 
@@ -60,13 +61,14 @@
 			}
 
 			$stmt->close();
-			//$conn->close();
+			// $conn->close();
 
 			return $list; //return multi-object e.g. array(object,object......)
         }
 
         public function query($keyword, $attribute){
             global $conn;
+            // $conn = $this->connect();
             $searchSQL ='SELECT * FROM order_options WHERE '.$attribute.' LIKE ?';
             //echo $searchSQL;
             $keyword = htmlspecialchars($keyword); //change characters in html. e.g. < is changed to &lt;
@@ -89,7 +91,7 @@
 			}
 
             $stmt->close();
-            //$conn->close();
+            // $conn->close();
 
             return $list; 
         }

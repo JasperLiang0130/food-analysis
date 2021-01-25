@@ -1,6 +1,6 @@
 <?php
 
-    include '../db_conn.php';
+    include '../Dbh.php';
     include '../Model/Order_items/OrderItemDAO.php';
 
     $action = $_POST["action"]; //check whether it comes from overall or most freq item
@@ -8,6 +8,8 @@
     $end = $_POST["end"]; //end date
     $arr_res_count = (array)json_decode($_POST["arr_res_count"]); //last query result
 
+    $db = new DBh();
+    $conn = $db->getConnection();
     $orderItemDao = new OrderItemDAO();
     init_res_order_item_count($arr_res_count); //initial result arr
     

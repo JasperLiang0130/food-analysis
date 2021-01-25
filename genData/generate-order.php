@@ -11,9 +11,8 @@
 
     //genOrder(1);
 
-    function genOrder($orderNum){
-        global $conn;
-        $conn->begin_transaction();
+
+    function generateOrder($orderNum){
 
         $customerDao = new CustomerDAO();
         $itemDao = new ItemDAO();
@@ -37,7 +36,7 @@
             $distinctItems = count($i_choose_items);
             $json_arr = array(); //will be updated after options inserted
             $orderDateTime = generateOrderDateTime();
-            $firstOrder = (mt_rand(0,1)<=0.1)? 1:0; //less than 10%, first order, >90% not first order 
+            $firstOrder = (mt_rand(0,9) < 1)? 1:0; //less than 10%, first order, >90% not first order 
             $customerId = mt_rand(0, count($customerDao->getAll())-1);
 
             $orderId = ($orderDao->insert(new Order(null, $totalValue, $totalItems, $distinctItems, '', $orderDateTime, $firstOrder, $customerId)))->getId();
@@ -107,10 +106,8 @@
             echo $json.'<br>';    
         }
 
-        $conn->commit();
-
     }
-    
+
     function orderOptionsToArray(OrderOption $orderOption, Option $option){
         return array("Name"=>$option->getName(), "Value"=>$orderOption->getValue(), "OrderItemID"=>$orderOption->getOrderItemId(), "OptionID"=>$orderOption->getOptionId(), "OptionSetID"=>$orderOption->getOptionSetId());
     }
@@ -138,5 +135,6 @@
 
         return strval($dt); //string type
     }
+
 
 ?>
