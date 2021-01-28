@@ -13,8 +13,9 @@
     $end = date_format(date_create()->setTimestamp(strtotime("now"))->setTimezone(new DateTimeZone('Australia/Sydney')), "Y-m-d");
 
     $customerDao = new CustomerDAO();
-    $countCustomers =  $customerDao->getTotalCountByDate($start, $end);
+    $countCustomers =  $customerDao->getTotalCountByDate($start, $end); //get existing customers order
     //echo $countCustomers;
+    //get summary data
     $orderDao = new OrderDAO();
     $revenue = $orderDao->getTotalRevenue($start, $end);
     $countOrders = $orderDao->getTotalCountOrd($start, $end);
@@ -24,19 +25,19 @@
     $avgDistItem = $orderDao->getAvgDistinctItems($start, $end);
     
     $orderItemDao = new OrderItemDAO();
-    $overall_arr = $orderItemDao->getAllIncName2($start, $end); 
-    $category_arr = $orderItemDao->getAllCategoryCount($start, $end);
+    $overall_arr = $orderItemDao->getAllIncName2($start, $end);  //get most freq item overall data
+    $category_arr = $orderItemDao->getAllCategoryCount($start, $end); //get category data
     
-    $popday_arr = $orderDao->getPopularDays($start, $end);
-    $pophour_arr = $orderDao->getPopularHoursByDay($start, $end);
+    $popday_arr = $orderDao->getPopularDays($start, $end); //get popular days for order
+    $pophour_arr = $orderDao->getPopularHoursByDay($start, $end); //get popular hours by days
     $joinday_arr = $customerDao->getPeopleJoinDay(getDateFormat($start, $end), $start, $end);
     $totalord_arr = $orderDao->getTotalOrders(getDateFormat($start, $end), $start, $end);
 
     $itemDao = new ItemDAO();
-    $itemGetAll = $itemDao->getAll(); //get all items
+    $itemGetAll = $itemDao->getAll(); //get all items for setting chart
     
     $db->commit();
-
+    //get date format according to different days defination
     function getDateFormat($start, $end){
         $diff = intval(date_diff(date_create($start), date_create($end))->format("%a"));
         if($diff <= 28)
@@ -434,6 +435,7 @@
         ttChart.updatedChart(getTotalOrder(totalord_arr));
     });
 
+    //This function is for most freq items bought with 'this'
     function updateFreqResultByItem(){
       item_Name = $("#itemName").val();
       updateTotalCountByDate();
