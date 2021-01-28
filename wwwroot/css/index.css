@@ -1,0 +1,33 @@
+.summary .card-title {
+    /* max-width: 13rem */
+    font-size : medium;
+}
+
+.summary .card-text{
+    font-size: x-large;
+    font-weight: 700;
+}
+
+.h-100{
+    height: 100%;
+}
+
+.col {
+    margin-bottom: 5px;
+}
+
+.row{
+    margin-bottom: 10px;
+}
+
+.popDay{
+    padding-top: 50px;
+}
+
+table {
+  width: 100%;
+}
+
+.input-freq{
+    padding-top: 100px;
+}

@@ -15,7 +15,7 @@
         private $getAvgDistinctItemSQL = 'SELECT AVG(DistinctItems) as avgDItem FROM orders WHERE orders.DateTime > ? AND orders.DateTime <= ?';
         private $getPopDaysSQL = 'SELECT SUM(orders.TotalItems) as sumItem, DAYOFWEEK(orders.DateTime) as Day FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Day order by Day';
         private $getPopHoursSQL = 'SELECT SUM(orders.TotalItems) as sumItem, DAYOFWEEK(orders.DateTime) as Day , HOUR(orders.DateTime) as Hour FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Day, Hour order by Day, Hour';
-        private $getTotalOrdersSQL = 'SELECT date_format(orders.DateTime, ?) as Df, COUNT(ID) as Count, orders.FirstOrder FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Df, orders.FirstOrder order by orders.FirstOrder, Df'; //date_format is "%Y-%m-%d"
+        private $getTotalOrdersSQL = 'SELECT date_format(orders.DateTime, ?) as Df, COUNT(ID) as Count, orders.FirstOrder, date_format(orders.DateTime, "%Y-%m-%d") as D_orderby FROM food.orders where orders.DateTime > ? AND orders.DateTime <= ? group by Df, orders.FirstOrder order by orders.FirstOrder, D_orderby'; //date_format is "%Y-%m-%d"
 
 
         public function insert(Order $order){

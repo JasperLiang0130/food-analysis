@@ -6,14 +6,21 @@ class OwnChart{
         Chart.defaults.global.defaultFontFamily = 'Lato';
         Chart.defaults.global.defaultFontSize = 16;
         Chart.defaults.global.defaultFontColor = '#777';
+        Chart.plugins.register({
+            id: 'labels'
+        });
+        Chart.defaults.global.plugins.labels = {
+            render: 'value' //for chartjs-plugin-labels extension
+        };
 
         var opt = {
                 scales: {
                     xAxes: [{ stacked: false }],
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
+                    yAxes: [
+                    {
+                        // ticks: {
+                        //     beginAtZero: true
+                        // }
                     },
                     {
                         stacked: false,
@@ -21,17 +28,42 @@ class OwnChart{
                     }
                     ]
                 },
-                legend: {display: true},
+                legend: {
+                    display: true,
+                    position : 'top'
+                },
                 title: {
                     display: false,
                     text: ''
+                },
+                plugins: {
+                    labels: false
                 }
             };
 
                 
-        if(model == 'pie'){
-            opt = {};
+        if(model == ('pie' || 'doughnut')){
+            opt = {
+                maintainAspectRatio: false,
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                title: {
+                    display: false,
+                    text: ''
+                },
+                plugins: {
+                    labels: {
+                        render: 'percentage',
+                        fontStyle: 'bold',
+                        fontColor: '#fff',
+                        precision: 2
+                    }
+                }
+            };
         }
+
 
         this.chart = new Chart(myChart, {
             // The type of chart we want to create
@@ -40,7 +72,8 @@ class OwnChart{
             data: {
                 labels: [], //x axis
                 datasets: [{
-                    label: 'dataset1', //display value of each column
+                    label: 'This data', //display value of each column
+                    fill: true,
                     borderColor: [],
                     backgroundColor: [],
                     data: []
@@ -56,7 +89,7 @@ class OwnChart{
             this.chart.options.scales.yAxes[0].stacked = true;
         }
 
-        if (model = 'bar') {
+        if (model != ('pie' || 'doughnut')) {
             this.chart.options.legend.display = false;
         }
 
@@ -82,6 +115,32 @@ class OwnChart{
         this.chart.update();
     }
 
+    setDisplayData(bool){
+        this.chart.options.plugins.labels = bool;
+        this.chart.update();
+    }
+
+    setDisplayDataPercentage(){
+        this.chart.options.plugins.labels = {
+            render : 'percentage',
+            precision : 2
+        }
+        this.chart.update();
+    }
+
+    setUnderneathFill(bool){
+        var len = this.chart.data.datasets.length;
+        for (let index = 0; index < len; index++) {
+            this.chart.data.datasets[index].fill = bool;
+        }
+        this.chart.update();
+    }
+
+    setLegendPos(pos){
+        this.chart.options.legend.position = pos;
+        this.chart.update();
+    }
+
     setTitle(title){
         this.chart.options.title.display = true;
         this.chart.options.title.text = title;
@@ -89,7 +148,8 @@ class OwnChart{
     }
 
     setDisplayLegend(bool){
-        this.chart.options.legend.display = bool;
+        this.chart.options.legend.display =bool;
+        this.chart.update();
     }
 
     //xlabels is array
@@ -130,3 +190,4 @@ class OwnChart{
     }
 
 }
+

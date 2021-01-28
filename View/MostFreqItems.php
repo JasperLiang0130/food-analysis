@@ -129,7 +129,7 @@
                     calTotalCount($arr_query, $arr_res_count, $itemName);
                     uasort($arr_res_count,"countSort"); //sorting number from max to min
                     
-                    // print_r($arr_res_count);
+                    //print_r($arr_query);
                     // echo '<br>';
                     
                     display($arr_res_count, $order_count, $itemName);

@@ -6,7 +6,7 @@
         private $findpkSQL = 'SELECT * FROM customers WHERE ID = ?';
         private $getAllSQL = 'SELECT * FROM customers';
         private $getTotalByDateSQL = 'SELECT COUNT(ID) as count FROM customers WHERE customers.MostRecentOrderDateTime > ? AND customers.MostRecentOrderDateTime <= ?';
-        private $getJoinDaySQL = 'SELECT date_format(customers.FirstOrderDateTime, ?) as Df, COUNT(ID) as Count FROM food.customers where customers.FirstOrderDateTime > ? AND customers.FirstOrderDateTime <= ? group by Df order by Df'; //date_format is "%Y-%m-%d"
+        private $getJoinDaySQL = 'SELECT date_format(customers.FirstOrderDateTime, ?) as Df, COUNT(ID) as Count, date_format(customers.FirstOrderDateTime, "%Y-%m-%d") as D_orderby FROM food.customers where customers.FirstOrderDateTime > ? AND customers.FirstOrderDateTime <= ? group by Df order by D_orderby'; //date_format is "%Y-%m-%d"
 
         public function insert(Customer $customer){
             global $conn;

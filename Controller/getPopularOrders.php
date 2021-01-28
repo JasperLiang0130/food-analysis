@@ -41,7 +41,7 @@
             return "%Y";
         }
         else{ //month
-            return "%Y-%m";
+            return "%Y-%b";
         }
     }
 
