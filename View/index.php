@@ -484,7 +484,7 @@
 
       function filterOfDateTime(date_start, date_end){
         $.ajax({
-          url : 'http://<?php echo $_SERVER['HTTP_HOST'];?>/Controller/getUpdateForSummaryData.php',
+          url : '../Controller/getUpdateForSummaryData.php',
           data : {
             start :	date_start,
             end :	date_end 
@@ -503,7 +503,7 @@
         });
 
         $.ajax({
-          url : 'http://<?php echo $_SERVER['HTTP_HOST'];?>/Controller/getDataOutputForMostFreqItems2.php',
+          url : '../Controller/getDataOutputForMostFreqItems2.php',
           data : {
               action : 'overall',
               start :	date_start,
@@ -521,7 +521,7 @@
         });
 
         $.ajax({
-          url : 'http://<?php echo $_SERVER['HTTP_HOST'];?>/Controller/getCategoriesData.php',
+          url : '../Controller/getCategoriesData.php',
           data : {
               action : 'categoriesUpdate',
               start :	date_start,
@@ -538,7 +538,7 @@
           }
         });
         $.ajax({
-          url : 'http://<?php echo $_SERVER['HTTP_HOST'];?>/Controller/getPopularOrders.php',
+          url : '../Controller/getPopularOrders.php',
           data : {
               action : 'popularDay',
               start :	date_start,
@@ -561,7 +561,7 @@
         });
         
         $.ajax({
-          url : 'http://<?php echo $_SERVER['HTTP_HOST'];?>/Controller/getDataOutputForMostFreqItems2.php',
+          url : '../Controller/getDataOutputForMostFreqItems2.php',
           data : {
               action : 'freqItem',
               itemName: item_Name,
